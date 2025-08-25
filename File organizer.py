@@ -15,7 +15,41 @@ file_types : dict = {
     "Others": [], # Create a folder for uncategorized files
 }
 
+# Organizes all files in the given directory. When there is a folder in the firectory it goes through that as well (recursive)
+def organize_all_files_in_directory(directory_path: str) -> None:
+    try:
+        for filename in os.listdir(directory_path):
+            file_path = os.path.join(directory_path, filename)
+
+            if os.path.isdir(file_path):
+                organize_all_files_in_directory(file_path)
+                continue
+            
+            if os.path.isfile(file_path):
+                file_ext = os.path.splitext(filename)[1].lower()
+                moved = False
+
+                for folder, extensions in file_types.items():
+                    if file_ext in extensions:
+                        target_folder = os.path.join(directory, folder)
+                        os.makedirs(target_folder, exist_ok=True)
+                        shutil.move(file_path, os.path.join(target_folder, filename))
+                        print(f"Moved: {filename} → {folder}")
+                        moved = True
+                        break
+
+                if not moved:
+                    other_folder = os.path.join(directory, "Others")
+                    os.makedirs(other_folder, exist_ok=True)
+                    shutil.move(file_path, os.path.join(other_folder, filename))
+                    print(f"Moved: {filename} → Others")
+    except Exception as e:
+        print(f"❌ Error: {e}")
+
+
+
 input_directory_path : str = input("Please enter path to the directory to sort: \n")
+
 
 if os.path.isdir(input_directory_path):
     directory = input_directory_path
@@ -24,30 +58,8 @@ else:
     exit()
 
 
-try:
-    for filename in os.listdir(directory):
-        file_path = os.path.join(directory, filename)
+organize_all_files_in_directory(directory)
 
-        if os.path.isfile(file_path):
-            file_ext = os.path.splitext(filename)[1].lower()
-            moved = False
 
-            for folder, extensions in file_types.items():
-                if file_ext in extensions:
-                    target_folder = os.path.join(directory, folder)
-                    os.makedirs(target_folder, exist_ok=True)
-                    shutil.move(file_path, os.path.join(target_folder, filename))
-                    print(f"Moved: {filename} → {folder}")
-                    moved = True
-                    break
 
-            if not moved:
-                other_folder = os.path.join(directory, "Others")
-                os.makedirs(other_folder, exist_ok=True)
-                shutil.move(file_path, os.path.join(other_folder, filename))
-                print(f"Moved: {filename} → Others")
-
-    print("✅ Files organized successfully!")
-
-except Exception as e:
-    print(f"❌ Error: {e}")
+print("✅ Files organized successfully!")
