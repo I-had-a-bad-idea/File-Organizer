@@ -2,20 +2,27 @@ import os
 import shutil
 
 # Replace this with the path to the folder you want to organize
-directory = r"C:\Users\shuda\Downloads"  # Use raw string (r"") for Windows paths
+directory : str = r""  # Use raw string (r"") for Windows paths
 
 # Define file type categories
-file_types = {
+file_types : dict = {
     "Images": [".jpg", ".jpeg", ".png", ".gif", ".bmp"],
     "Documents": [".pdf", ".docx", ".doc", ".txt", ".xlsx", ".pptx"],
     "Videos": [".mp4", ".mov", ".avi", ".mkv"],
     "Music": [".mp3", ".wav", ".aac"],
     "Archives": [".zip", ".rar", ".tar", ".gz"],
     "Scripts": [".py", ".js", ".html", ".css", ".java", ".cpp"],
+    "Others": [], # Create a folder for uncategorized files
 }
 
-# Create a folder for uncategorized files
-file_types["Others"] = []
+input_directory_path : str = input("Please enter path to the directory to sort: \n")
+
+if os.path.isdir(input_directory_path):
+    directory = input_directory_path
+else:
+    print("Please enter valid path")
+    exit()
+
 
 try:
     for filename in os.listdir(directory):
